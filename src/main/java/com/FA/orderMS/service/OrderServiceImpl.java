@@ -148,39 +148,35 @@ public class OrderServiceImpl implements OrderService {
 		return reorder.getOrderId();
 	}
 	
-	//itegrating kafka consumer to consume add to cart producer messages
-	@KafkaListener(topics = "kafka-user", groupId = "group_id")
-	public PlacedOrderDTO placeOrderKafka(List<ProductDTO> productList, List<CartDTO> cartList, OrderDTO orderDTO) throws OrderException {
-		Order order = new Order();
-		ValidateOrder.validateOrder(orderDTO);
-		String id = "O" + index++;
-		order.setOrderId(id);
-		order.setAddress(orderDTO.getAddress());
-		order.setBuyerId(cartList.get(0).getBuyerId());
-		order.setDate(LocalDate.now());
-		order.setStatus(Status.ORDER_PLACED.toString());	
-		order.setAmount(0f);
-		List<OrderedProducts> productsOrdered = new ArrayList<>();
-		for(int i = 0; i<cartList.size();i++) {
-			ValidateOrder.validateStock(cartList.get(i), productList.get(i));			
-			order.setAmount(order.getAmount()+(cartList.get(i).getQuantity()*productList.get(i).getPrice()));
-			
-			OrderedProducts prodO = new OrderedProducts();
-			prodO.setSellerId(productList.get(i).getSellerId());
-			prodO.setPrimaryKeys(new PrimaryKey(cartList.get(i).getBuyerId(),productList.get(i).getProdId()));
-			prodO.setQuantity(cartList.get(i).getQuantity());
-			productsOrdered.add(prodO);				
-		}		
-		prodOrderedRepo.saveAll(productsOrdered);
-		orderRepo.save(order);
-		PlacedOrderDTO orderPlaced = new PlacedOrderDTO();
-		orderPlaced.setBuyerId(order.getBuyerId());
-		orderPlaced.setOrderId(order.getOrderId());
-		Integer rewardPts = (int) (order.getAmount()/100);		
-		orderPlaced.setRewardPoints(rewardPts);
-		
-		
-		return orderPlaced;
-	}
+	/*
+	 * //itegrating kafka consumer to consume add to cart producer messages
+	 * 
+	 * @KafkaListener(topics = "kafka-user", groupId = "group_id") public
+	 * PlacedOrderDTO placeOrderKafka(List<ProductDTO> productList, List<CartDTO>
+	 * cartList, OrderDTO orderDTO) throws OrderException { Order order = new
+	 * Order(); ValidateOrder.validateOrder(orderDTO); String id = "O" + index++;
+	 * order.setOrderId(id); order.setAddress(orderDTO.getAddress());
+	 * order.setBuyerId(cartList.get(0).getBuyerId());
+	 * order.setDate(LocalDate.now());
+	 * order.setStatus(Status.ORDER_PLACED.toString()); order.setAmount(0f);
+	 * List<OrderedProducts> productsOrdered = new ArrayList<>(); for(int i = 0;
+	 * i<cartList.size();i++) { ValidateOrder.validateStock(cartList.get(i),
+	 * productList.get(i));
+	 * order.setAmount(order.getAmount()+(cartList.get(i).getQuantity()*productList.
+	 * get(i).getPrice()));
+	 * 
+	 * OrderedProducts prodO = new OrderedProducts();
+	 * prodO.setSellerId(productList.get(i).getSellerId()); prodO.setPrimaryKeys(new
+	 * PrimaryKey(cartList.get(i).getBuyerId(),productList.get(i).getProdId()));
+	 * prodO.setQuantity(cartList.get(i).getQuantity()); productsOrdered.add(prodO);
+	 * } prodOrderedRepo.saveAll(productsOrdered); orderRepo.save(order);
+	 * PlacedOrderDTO orderPlaced = new PlacedOrderDTO();
+	 * orderPlaced.setBuyerId(order.getBuyerId());
+	 * orderPlaced.setOrderId(order.getOrderId()); Integer rewardPts = (int)
+	 * (order.getAmount()/100); orderPlaced.setRewardPoints(rewardPts);
+	 * 
+	 * 
+	 * return orderPlaced; }
+	 */
 
 }
